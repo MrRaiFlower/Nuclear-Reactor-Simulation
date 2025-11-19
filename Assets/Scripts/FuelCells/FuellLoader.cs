@@ -19,7 +19,7 @@ public class FuellLoader : MonoBehaviour
             {
                 GameObject newFuelCell = fuelCell;
 
-                newFuelCell.GetComponent<FuelCell>().isExhausted = UnityEngine.Random.value + 0.01f > 1.0f - loadRation;
+                newFuelCell.GetComponent<FuelCell>().isExhausted = UnityEngine.Random.value > loadRation;
 
                 Instantiate(newFuelCell, this.transform.position + new Vector3(step * j, step * i, 0.0f), Quaternion.identity, this.gameObject.transform);
             }

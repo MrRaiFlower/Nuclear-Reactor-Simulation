@@ -12,25 +12,21 @@ public class Neutron : MonoBehaviour
 
     [Header("Parameters")]
     [SerializeField] private float radius;
-    public Vector3 startingVelocity;
-    public float startingSpeed;
+    public Vector3 startingDirection;
+    public bool startingSpeed;
 
-    [Header("Tags")]
-    private const string FrameTag = "Frame";
-    private const string FuelCellTag = "Fuel Cell";
-
-    private Vector3 velocity;
-    private float speed;
+    private Vector3 direction;
+    [HideInInspector] public bool isFast;
 
     void Start()
     {
-        setParameters(startingVelocity, startingSpeed);
+        setParameters(startingDirection, startingSpeed);
     }
 
-    public void setParameters(Vector3 newVelocity, float newSpeed)
+    public void setParameters(Vector3 newDirection, bool newSpeed)
     {
-        velocity = newVelocity;
-        speed = newSpeed;
+        direction = newDirection;
+        isFast = newSpeed;
     }
 
     void FixedUpdate()
@@ -48,11 +44,11 @@ public class Neutron : MonoBehaviour
         {
             Collide(hit);
 
-            if (hit.collider.tag != FuelCellTag)
+            if (hit.collider.tag != "Fuel Cell")
             {
-                velocity.y *= -1.0f;
+                direction.y *= -1.0f;
             }
-            else
+            else if (isFast)
             {
                 Destroy(this.gameObject);
             }
@@ -71,11 +67,11 @@ public class Neutron : MonoBehaviour
         {
             Collide(hit);
 
-            if (hit.collider.tag != FuelCellTag)
+            if (hit.collider.tag != "Fuel Cell")
             {
-                velocity.x *= -1.0f;
+                direction.x *= -1.0f;
             }
-            else
+            else if (isFast)
             {
                 Destroy(this.gameObject);
             }
@@ -85,29 +81,53 @@ public class Neutron : MonoBehaviour
 
         move:
 
-        this.transform.position += velocity.normalized * speed * Time.fixedDeltaTime;
+        if (this.isFast)
+        {
+            this.transform.position += direction.normalized * 2.0f * Time.fixedDeltaTime;
+        }
+        else
+        {
+            this.transform.position += direction.normalized * 1.0f * Time.fixedDeltaTime;
+        }
+        
     }
 
     void Collide(RaycastHit2D hit)
     {
         switch (hit.collider.tag)
         {
-            case FrameTag:
+            case "Frame":
 
                 break;
             
-            case FuelCellTag:
+            case "Fuel Cell":
 
-                hit.collider.gameObject.GetComponent<FuelCell>().CreateNeutrons();
-                hit.collider.gameObject.GetComponent<FuelCell>().Exhaust();
+                if (isFast)
+                {
+                    hit.collider.gameObject.GetComponent<FuelCell>().CreateNeutrons();
+                    hit.collider.gameObject.GetComponent<FuelCell>().Exhaust();
+                }
+
+                break;
+            
+            case "Control Rod":
+
+                if (this.isFast)
+                {
+                    this.isFast = false;
+                }
+                else
+                {
+                    Destroy(this.gameObject);
+                }
+
+                break;
+            
+            case "Moderator":
+
+                this.isFast = true;
 
                 break;
         }
-    }
-
-    public Neutron(Vector3 startingVelocity, float startingSpeed)
-    {
-        this.velocity = startingVelocity;
-        this.speed = startingSpeed;
     }
 }

@@ -3,19 +3,21 @@ using UnityEngine;
 public class ReactionStarter : MonoBehaviour
 {
     [Header("Parameters")]
-    [SerializeField] private float neutronsMinSpeed;
-    [SerializeField] private float neutronsMaxSpeed;
+    [SerializeField] private int numberOfNeutrons;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject neutron;
 
     void Start()
     {
-        GameObject newNeutron = neutron;
+        for (int i = 0; i < numberOfNeutrons; i++)
+        {
+            GameObject newNeutron = neutron;
 
-        newNeutron.GetComponent<Neutron>().startingVelocity = Quaternion.AngleAxis(UnityEngine.Random.Range(0.0f, 1.0f) * 360.0f, Vector3.forward) * Vector3.up;
-        newNeutron.GetComponent<Neutron>().startingSpeed = UnityEngine.Random.Range(neutronsMinSpeed, neutronsMaxSpeed);
+            newNeutron.GetComponent<Neutron>().startingDirection = Quaternion.AngleAxis(UnityEngine.Random.Range(0.0f, 1.0f) * 360.0f, Vector3.forward) * Vector3.up;
+            newNeutron.GetComponent<Neutron>().startingSpeed = UnityEngine.Random.value > 0.5f;
 
-        Instantiate(newNeutron);
+            Instantiate(newNeutron);
+        }
     }
 }

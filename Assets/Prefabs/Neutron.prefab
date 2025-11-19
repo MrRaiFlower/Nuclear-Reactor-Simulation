@@ -137,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Neutron
   sprite: {fileID: 757100399222569167}
   color: {r: 0, g: 0, b: 0, a: 1}
-  radius: 0.1
-  startingVelocity: {x: 1, y: 1, z: 0}
-  startingSpeed: 2
+  radius: 0.05
+  startingDirection: {x: 0, y: 0, z: 0}
+  startingSpeed: 0
+  isFast: 0

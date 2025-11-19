@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2075362944773945228}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -49,10 +49,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FuelCell
   circle: {fileID: 7389715514780148032}
   depletedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  neutronsNumber: 3
-  neutronsMinSpeed: 1
-  neutronsMaxSpeed: 3
+  numberOfNeutrons: 3
   neutron: {fileID: 6771771572757119853, guid: 51b07ef2c773ff84f913b55a5f2fb452, type: 3}
+  isExhausted: 1
 --- !u!58 &7560976613603497420
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -116,7 +115,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 684411788622988956}
@@ -206,7 +205,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 684411788622988956}

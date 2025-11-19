@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FuelCell : MonoBehaviour
@@ -10,9 +11,7 @@ public class FuelCell : MonoBehaviour
     [SerializeField] private Color depletedColor;
 
     [Header("Parameters")]
-    [SerializeField] private int neutronsNumber;
-    [SerializeField] private float neutronsMinSpeed;
-    [SerializeField] private float neutronsMaxSpeed;
+    [SerializeField] private int numberOfNeutrons;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject neutron;
@@ -38,7 +37,7 @@ public class FuelCell : MonoBehaviour
 
     public void CreateNeutrons()
     {
-        for (int i = 0; i < neutronsNumber; i++)
+        for (int i = 0; i < numberOfNeutrons; i++)
         {
             Instantiate(createNeutron(), this.transform.position, quaternion.identity);
         }
@@ -48,8 +47,8 @@ public class FuelCell : MonoBehaviour
     {
         GameObject newNeutron = neutron;
 
-        newNeutron.GetComponent<Neutron>().startingVelocity = Quaternion.AngleAxis(UnityEngine.Random.Range(0.0f, 1.0f) * 360.0f, Vector3.forward) * Vector3.up;
-        newNeutron.GetComponent<Neutron>().startingSpeed = UnityEngine.Random.Range(neutronsMinSpeed, neutronsMaxSpeed);
+        newNeutron.GetComponent<Neutron>().startingDirection = Quaternion.AngleAxis(UnityEngine.Random.Range(0.0f, 1.0f) * 360.0f, Vector3.forward) * Vector3.up;
+        newNeutron.GetComponent<Neutron>().startingSpeed = UnityEngine.Random.value > 0.5f;
 
         return newNeutron;
     }
