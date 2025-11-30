@@ -15,7 +15,7 @@ public class ReactionStarter : MonoBehaviour
             GameObject newNeutron = neutron;
 
             newNeutron.GetComponent<Neutron>().startingDirection = Quaternion.AngleAxis(UnityEngine.Random.Range(0.0f, 1.0f) * 360.0f, Vector3.forward) * Vector3.up;
-            newNeutron.GetComponent<Neutron>().startingSpeed = UnityEngine.Random.value > 0.5f;
+            newNeutron.GetComponent<Neutron>().startingSpeed = false;
 
             Instantiate(newNeutron);
         }

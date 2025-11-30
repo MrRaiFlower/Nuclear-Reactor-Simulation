@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FuelCell : MonoBehaviour
@@ -8,17 +7,19 @@ public class FuelCell : MonoBehaviour
     [SerializeField] private GameObject circle;
 
     [Header("Appearence")]
+    [SerializeField] private Color fullColor;
     [SerializeField] private Color depletedColor;
 
-    [Header("Parameters")]
-    [SerializeField] private int numberOfNeutrons;
+    [Header("Properties")]
+    [SerializeField] private float xenonChance;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject neutron;
+    [SerializeField] private GameObject xenon;
 
     public bool isExhausted;
 
-    void Start()
+    private void Start()
     {
         if (isExhausted)
         {
@@ -28,16 +29,33 @@ public class FuelCell : MonoBehaviour
 
     public void Exhaust()
     {
-        circle.GetComponent<SpriteRenderer>().color = depletedColor;
-        
-        this.GetComponent<Collider2D>().enabled = false;
+        this.circle.GetComponent<SpriteRenderer>().color = depletedColor;
 
-        Destroy(this);
+        this.isExhausted = true;
+
+        this.GetComponent<Collider2D>().enabled = false;
+    }
+
+    public void SpawnXenon()
+    {
+        if (UnityEngine.Random.value < xenonChance)
+        {
+            Instantiate(xenon, this.transform.position + Vector3.back, quaternion.identity);
+        }
+    }
+
+    public void Refill()
+    {
+        this.circle.GetComponent<SpriteRenderer>().color = fullColor;
+
+        this.isExhausted = false;
+        
+        this.GetComponent<Collider2D>().enabled = true;
     }
 
     public void CreateNeutrons()
     {
-        for (int i = 0; i < numberOfNeutrons; i++)
+        for (int i = 0; i < 3; i++)
         {
             Instantiate(createNeutron(), this.transform.position, quaternion.identity);
         }
@@ -48,7 +66,7 @@ public class FuelCell : MonoBehaviour
         GameObject newNeutron = neutron;
 
         newNeutron.GetComponent<Neutron>().startingDirection = Quaternion.AngleAxis(UnityEngine.Random.Range(0.0f, 1.0f) * 360.0f, Vector3.forward) * Vector3.up;
-        newNeutron.GetComponent<Neutron>().startingSpeed = UnityEngine.Random.value > 0.5f;
+        newNeutron.GetComponent<Neutron>().startingSpeed = true;
 
         return newNeutron;
     }

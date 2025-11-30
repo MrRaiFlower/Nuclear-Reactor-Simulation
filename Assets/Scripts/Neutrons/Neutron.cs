@@ -1,5 +1,3 @@
-using System.Transactions;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Neutron : MonoBehaviour
@@ -7,13 +5,15 @@ public class Neutron : MonoBehaviour
     [Header("Referneces")]
     [SerializeField] private GameObject sprite;
 
-    [Header("Appearence")]
-    [SerializeField] private Color color;
-
     [Header("Parameters")]
     [SerializeField] private float radius;
     public Vector3 startingDirection;
     public bool startingSpeed;
+    [SerializeField] private float chanceToHeatUp;
+
+    [Header("Appearence")]
+    [SerializeField] private Color fastColor;
+    [SerializeField] private Color slowColor;
 
     private Vector3 direction;
     [HideInInspector] public bool isFast;
@@ -21,6 +21,20 @@ public class Neutron : MonoBehaviour
     void Start()
     {
         setParameters(startingDirection, startingSpeed);
+
+        UpdateColor();
+    }
+
+    private void UpdateColor()
+    {
+        if (isFast)
+        {
+            sprite.GetComponent<SpriteRenderer>().color = fastColor;
+        }
+        else
+        {
+            sprite.GetComponent<SpriteRenderer>().color = slowColor;
+        }
     }
 
     public void setParameters(Vector3 newDirection, bool newSpeed)
@@ -33,18 +47,18 @@ public class Neutron : MonoBehaviour
     {
         RaycastHit2D hit;
         
-        hit = Physics2D.Raycast(this.transform.position, Vector2.up, radius);
+        hit = Physics2D.Raycast(this.transform.position, Vector2.up, radius, ~LayerMask.GetMask("Ignore"));
 
         if (!hit)
         {
-            hit = Physics2D.Raycast(this.transform.position, Vector2.down, radius);
+            hit = Physics2D.Raycast(this.transform.position, Vector2.down, radius, ~LayerMask.GetMask("Ignore"));
         }
 
         if (hit)
         {
             Collide(hit);
 
-            if (hit.collider.tag != "Fuel Cell")
+            if (hit.collider.tag != "Fuel Cell" && hit.collider.tag != "Xenon" && hit.collider.tag != "Moderator")
             {
                 direction.y *= -1.0f;
             }
@@ -56,18 +70,18 @@ public class Neutron : MonoBehaviour
             goto move;
         }
 
-        hit = Physics2D.Raycast(this.transform.position, Vector2.right, radius);
+        hit = Physics2D.Raycast(this.transform.position, Vector2.right, radius, ~LayerMask.GetMask("Ignore"));
 
         if (!hit)
         {
-            hit = Physics2D.Raycast(this.transform.position, Vector2.left, radius);
+            hit = Physics2D.Raycast(this.transform.position, Vector2.left, radius, ~LayerMask.GetMask("Ignore"));
         }
 
         if (hit)
         {
             Collide(hit);
 
-            if (hit.collider.tag != "Fuel Cell")
+            if (hit.collider.tag != "Fuel Cell" && hit.collider.tag != "Xenon" && hit.collider.tag != "Moderator")
             {
                 direction.x *= -1.0f;
             }
@@ -89,7 +103,25 @@ public class Neutron : MonoBehaviour
         {
             this.transform.position += direction.normalized * 1.0f * Time.fixedDeltaTime;
         }
-        
+
+        RaycastHit2D waterHit = Physics2D.Raycast(this.transform.position, Vector2.up, radius / 0.5f, LayerMask.GetMask("Ignore"));
+
+        if (waterHit)
+        {
+            if (Random.value < chanceToHeatUp)
+                {
+                    waterHit.transform.gameObject.GetComponent<Water>().HeatUp();
+
+                    if (isFast)
+                    {
+                        isFast = false; UpdateColor();
+                    }
+                    else
+                    {
+                        Destroy(this.gameObject);
+                    }
+                }
+        }
     }
 
     void Collide(RaycastHit2D hit)
@@ -102,30 +134,31 @@ public class Neutron : MonoBehaviour
             
             case "Fuel Cell":
 
-                if (isFast)
+                if (!isFast)
                 {
                     hit.collider.gameObject.GetComponent<FuelCell>().CreateNeutrons();
                     hit.collider.gameObject.GetComponent<FuelCell>().Exhaust();
+                    hit.collider.gameObject.GetComponent<FuelCell>().SpawnXenon();
                 }
 
                 break;
             
             case "Control Rod":
 
-                if (this.isFast)
-                {
-                    this.isFast = false;
-                }
-                else
-                {
-                    Destroy(this.gameObject);
-                }
+                Destroy(this.gameObject);
 
                 break;
             
             case "Moderator":
 
-                this.isFast = true;
+                this.isFast = false; UpdateColor();
+
+                break;
+            
+            case "Xenon":
+
+                hit.collider.gameObject.GetComponent<Xenon>().Deplete();
+                Destroy(this.gameObject);
 
                 break;
         }
